@@ -1,0 +1,168 @@
+/* ===== Register Card ===== */
+.reg-form {
+  width: 360px;
+  margin: 90px auto;
+  padding: 28px;
+
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #f8f9fa 100%
+  );
+
+  border-radius: 14px;
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.12),
+    0 4px 10px rgba(0, 0, 0, 0.06);
+
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ===== Inputs ===== */
+.reg-form input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #d0d7de;
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.reg-form input:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
+}
+
+/* ===== Password Section ===== */
+.password-sec {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.password-sec input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* Show / Hide Button */
+.password-sec button {
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+
+  background: linear-gradient(
+    135deg,
+    #f1f3f4,
+    #e8f0fe
+  );
+
+  color: #1a73e8;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+
+  transition:
+    background 0.25s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.password-sec button:hover {
+  background: linear-gradient(
+    135deg,
+    #e8f0fe,
+    #d2e3fc
+  );
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+/* ===== Password Rules ===== */
+.rules {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 18px;
+  font-size: 13px;
+}
+
+.rules li {
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Valid Rule */
+.rules .ok {
+  color: #16a34a;
+  font-weight: 500;
+}
+
+/* Invalid Rule */
+.rules .bad {
+  color: #dc2626;
+}
+
+/* ===== Register Button ===== */
+.reg-form form > button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+
+  background: linear-gradient(
+    135deg,
+    #2563eb 0%,
+    #3b82f6 100%
+  );
+
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.25s ease;
+}
+
+.reg-form form > button:hover {
+  background: linear-gradient(
+    135deg,
+    #1e40af 0%,
+    #2563eb 100%
+  );
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* ===== Login Redirect ===== */
+.reg-form p {
+  margin-top: 18px;
+  font-size: 14px;
+  text-align: center;
+  color: #444;
+}
+
+.reg-form p button {
+  margin-left: 6px;
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.reg-form p button:hover {
+  text-decoration: underline;
+}

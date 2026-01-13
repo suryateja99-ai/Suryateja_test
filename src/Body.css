@@ -1,0 +1,109 @@
+/* ===== Main Container ===== */
+.sports {
+  padding: 30px;
+  min-height: 100vh;
+
+  background: linear-gradient(
+    180deg,
+    #f8f9fa 0%,
+    #eef2ff 100%
+  );
+
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ===== Sports Grid ===== */
+.showing {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+}
+
+/* ===== Sport Card ===== */
+.showing > div {
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #f9fafb 100%
+  );
+
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.12),
+    0 4px 10px rgba(0, 0, 0, 0.06);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* Card Hover */
+.showing > div:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.18),
+    0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Sport Image ===== */
+.showing img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+/* ===== Sport Name ===== */
+.showing h3 {
+  margin: 8px 0 14px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* ===== Book Button ===== */
+.showing button {
+  padding: 10px 18px;
+
+  background: linear-gradient(
+    135deg,
+    #2563eb 0%,
+    #3b82f6 100%
+  );
+
+  border: none;
+  border-radius: 10px;
+
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.25s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+/* Button Hover */
+.showing button:hover {
+  background: linear-gradient(
+    135deg,
+    #1e40af 0%,
+    #2563eb 100%
+  );
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+/* Button Disabled (Optional) */
+.showing button:disabled {
+  background: #c7c7c7;
+  cursor: not-allowed;
+  box-shadow: none;
+}
