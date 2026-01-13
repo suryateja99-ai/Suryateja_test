@@ -13,5 +13,3 @@ A full-stack sports slot booking application.
 - Slot booking with time validation
 - Prevent double booking
 - Protected APIs
-
-## Project Structure
