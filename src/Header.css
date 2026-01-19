@@ -1,4 +1,4 @@
-/* ===== Header ===== */
+
 .header {
   position: relative;
   display: flex;
@@ -24,7 +24,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
-/* ===== Common Button Styles ===== */
+
 .header button {
   padding: 7px 16px;
   font-size: 14px;
@@ -62,7 +62,7 @@
 /* ===== Button Positions ===== */
 .home {
   position: absolute;
-  right: 20px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
 }
@@ -83,7 +83,7 @@
 
 .logout {
   position: absolute;
-  right: 160px;
+  right: 100px;
   top: 50%;
   transform: translateY(-50%);
 }

@@ -5,12 +5,14 @@ import Header from './Header'
 import Register from './Register'
 import Login from './Login';
 import Success from './Success';
+import { AuthProvider } from "./context/AuthContext.jsx";
 function App() {
 
   return (
     <>
     
       <BrowserRouter>
+      <AuthProvider>
       <Header/>
       <Routes>
         <Route path='/' element={<Body/>}/>
@@ -19,6 +21,7 @@ function App() {
         <Route path='/login' element={<Login/>}/>
         <Route path='/success' element={<Success/>}/>
       </Routes>
+      </AuthProvider>
       </BrowserRouter>
     </>
   )

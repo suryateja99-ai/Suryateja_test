@@ -1,52 +1,92 @@
-import {useState} from 'react';
-import axios from 'axios'
-import './Login.css';
-import {useNavigate} from 'react-router-dom';
+import "./Login.css";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
+import api from "./api/axios";
 
+function Login() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-function Login(){
-const[userD, setUserD]=useState({
-    email:'',
-    password:'',
-})
-const navigate = useNavigate();
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
 
-const[showPassword, setShowPassword]=useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-const handleChange=(e)=>{
-    setUserD({...userD, [e.target.name]:e.target.value})
-}
+  const handleChange = (e) => {
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
-const tooglePassword=()=>{
-    setShowPassword(prev=>!prev)
-}
+  const togglePassword = () => {
+    setShowPassword((prev) => !prev);
+  };
 
-const handleSubmit=async(e)=>{
-   e.preventDefault()
-   try{
-    const res= await axios.post('http://localhost:5000/login', userD)
-   localStorage.setItem('token', res.data.token)
-   localStorage.setItem('username', res.data.user.name);
-   alert('login successful')
-   navigate('/');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-   setUserD({email:'',password:''});
-   }catch(err){
-    alert('Invalid username or password');
-   }
-}
-return(
-    <div className='login-form'>
-        <form onSubmit={handleSubmit}>
-            <input type='email' placeholder='Enter user name' value={userD.email} name='email' onChange={handleChange}/>
-            <div className='password-sec'>
-                <input type={showPassword ?'text':'password'} placeholder='Enter password' value={userD.password} name='password' onChange={handleChange}/>
-                <button type="button" onClick={tooglePassword}>{showPassword ? 'hide':'unhide'}</button>
-            </div>
-            <button type='submit'>Login</button>
-        </form>
+    if (!form.email || !form.password) {
+      setError("Email and password are required");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const res = await api.post("/auth/login", form);
+
+      login(res.data.token, res.data.user.name);
+
+      navigate("/");
+    } catch (err) {
+      setError("Invalid email or password");
+      console.log(err)
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="login-form">
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          name="email"
+          placeholder="Enter email"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
+
+        <div className="password-sec">
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            placeholder="Enter password"
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
+          <button type="button" onClick={togglePassword}>
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        </div>
+
+        {error && <p className="error">{error}</p>}
+
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </button>
+      </form>
     </div>
-
-)
+  );
 }
+
 export default Login;

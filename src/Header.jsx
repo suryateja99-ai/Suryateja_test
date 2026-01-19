@@ -1,54 +1,52 @@
-import './Header.css';
-import {useNavigate, useLocation} from 'react-router-dom';
+import "./Header.css";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
 
 function Header() {
-    const navigate = useNavigate()
-    const location = useLocation()
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    const isHomepage = location.pathname==='/';
-    const isRegpage =location.pathname==='/register'
-    const isLogpage = location.pathname==='/login';
-    const isLoggedIn = !!localStorage.getItem('token')
+  const { isLoggedIn, logout } = useAuth();
 
-    const logout=()=>{
-      localStorage.removeItem('token')
-      navigate('/login')
-    }
+  const isHomepage = location.pathname === "/";
+  const isRegisterPage = location.pathname === "/register";
+  const isLoginPage = location.pathname === "/login";
 
-    const toHome =()=>{
-        navigate('/')
-    }
-
-    const toReg=()=>{
-      navigate('/register')
-    }
-
-    const toLogin=()=>{
-    navigate('/login')
-  }
   return (
     <header className="header">
-      Sports Booking System
-      <div className='home'>
-        <button onClick={toHome} disabled={isHomepage}>Home</button>
-      </div>
-      {!isLoggedIn  &&(
-        <>
-        <div className='register'>
-        <button onClick={toReg} disabled={isRegpage}>Register</button>
-      </div>
-      <div className='login'>
-        <button onClick={toLogin} disabled={isLogpage}>Login</button>
-      </div>
-        </>
-      )
-      }
+      <h2 className="title" onClick={() => navigate("/")}>
+        Sports Booking System
+      </h2>
 
-      {isLoggedIn &&(
-        <div className='logout'>
-          <button onClick={logout}>Logout</button>
-        </div>
-      )}
+      <div className="nav-buttons">
+        <button onClick={() => navigate("/")} disabled={isHomepage}>
+          Home
+        </button>
+
+        {!isLoggedIn && (
+          <>
+            <button
+              onClick={() => navigate("/register")}
+              disabled={isRegisterPage}
+            >
+              Register
+            </button>
+
+            <button
+              onClick={() => navigate("/login")}
+              disabled={isLoginPage}
+            >
+              Login
+            </button>
+          </>
+        )}
+
+        {isLoggedIn && (
+          <button onClick={logout} className="logout">
+            Logout
+          </button>
+        )}
+      </div>
     </header>
   );
 }

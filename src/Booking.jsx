@@ -1,88 +1,100 @@
-import { useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import './Booking.css';
-import {useNavigate} from 'react-router-dom';
+import "./Booking.css";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import moment from "moment";
+import api from "./api/axios";
 
 function Booking() {
+  const navigate = useNavigate();
   const location = useLocation();
-  const sport = location.state?.sport;
-  const name = location.state?.name;
+
+  const sport = location.state?.sport || "";
+  const name = location.state?.name || "";
 
   const [form, setForm] = useState({
-    name,
+    slotId: "",
     sport,
-    date: '',
-    time: '',
+    name,
   });
 
-  const [bookedSlots, setBookedSlots] = useState([]);
+  const [slots, setSlots] = useState([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [date, setDate] = useState("");
 
-  const timeSlots = [
-    "12:00 AM - 01:00 AM","01:00 AM - 02:00 AM","02:00 AM - 03:00 AM",
-    "03:00 AM - 04:00 AM","04:00 AM - 05:00 AM","05:00 AM - 06:00 AM",
-    "06:00 AM - 07:00 AM","07:00 AM - 08:00 AM","08:00 AM - 09:00 AM",
-    "09:00 AM - 10:00 AM","10:00 AM - 11:00 AM","11:00 AM - 12:00 PM",
-    "12:00 PM - 01:00 PM","01:00 PM - 02:00 PM","02:00 PM - 03:00 PM",
-    "03:00 PM - 04:00 PM","04:00 PM - 05:00 PM","05:00 PM - 06:00 PM",
-    "06:00 PM - 07:00 PM","07:00 PM - 08:00 PM","08:00 PM - 09:00 PM",
-    "09:00 PM - 10:00 PM","10:00 PM - 11:00 PM","11:00 PM - 12:00 AM"
-  ];
+  const today = moment().format("YYYY-MM-DD");
 
-  const today = new Date().toISOString().split('T')[0];
-  const currentHour = new Date().getHours();
-
-  const getSlotHour = (slot) => {
-    const [time, period] = slot.split(' ');
-    let hour = parseInt(time.split(':')[0]);
-
-    if (period === 'PM' && hour !== 12) hour += 12;
-    if (period === 'AM' && hour === 12) hour = 0;
-
-    return hour;
-  };
-
+  
   useEffect(() => {
-    if (!form.date || !form.sport) return;
+    if (!date || !sport) return;
 
-    axios.get('http://localhost:5000/booked-slots', {
-      params: { sport: form.sport, date: form.date }
-    })
-    .then(res => setBookedSlots(res.data))
-    .catch(() => setBookedSlots([]));
-  }, [form.date, form.sport]);
+    const fetchSlots = async () => {
+      try {
+        setLoadingSlots(true);
+        setError("");
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const navigate= useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      await axios.post(
-        'http://localhost:5000/booking',
-        form,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
-      );
-
-      navigate('/success')
-      setForm({ ...form, date: '', time: '' });
-
-    } catch (err) {
-      if (err.response?.status === 409) {
-        alert('Slot already booked');
-      } else {
-        alert('Booking failed');
+        const res = await api.get("/slots", { params: { sport, date } });
+        
+        setSlots(res.data.data || []);
+        
+        setForm((prev) => ({ ...prev, slotId: "" }));
+      } catch (err) {
+        setError("Failed to load slots. Try again.");
+        setSlots([]);
+      } finally {
+        setLoadingSlots(false);
       }
+    };
+
+    fetchSlots();
+  }, [date, sport]);
+
+  const handleDateChange = (e) => setDate(e.target.value);
+  const handleSlotChange = (e) => setForm((prev) => ({ ...prev, slotId: e.target.value }));
+
+ 
+  const formatSlot = (start, end) =>
+    `${moment(start, "HH:mm").format("hh:mm A")} - ${moment(end, "HH:mm").format("hh:mm A")}`;
+
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!form.slotId) {
+    setError("Please select a slot");
+    return;
+  }
+
+  try {
+    setBookingLoading(true);
+    setError("");
+
+    console.log("Sending booking data:", { slotId: form.slotId });
+
+    await api.post("/bookings", {
+      sport,
+      date,
+      time: form.slotId
+    });
+    navigate("/success");
+
+  } catch (err) {
+    if (err.response?.status === 409) {
+      console.log(err)
+      setError("Slot already booked. Please select another slot.");
+      
+      const res = await api.get("/slots", { params: { sport, date } });
+      setSlots(res.data.data || []);
+    } else if (err.response?.status === 400) {
+      setError(err.response.data.message || "Invalid request");
+    } else {
+      setError("Booking failed. Try again.");
     }
-  };
+  } finally {
+    setBookingLoading(false);
+  }
+};
+
 
   return (
     <div className="form">
@@ -93,33 +105,43 @@ function Booking() {
         type="date"
         name="date"
         min={today}
-        value={form.date}
-        onChange={handleChange}
+        value={date}
+        onChange={handleDateChange}
         required
       />
 
-      <select name="time" value={form.time} onChange={handleChange} required>
-        <option value="">Select Slot</option>
+      <select
+        name="slotId"
+        value={form.slotId}
+        onChange={handleSlotChange}
+        disabled={loadingSlots || !date}
+        required
+      >
+        <option value="">
+          {loadingSlots ? "Loading slots..." : "Select Slot"}
+        </option>
 
-        {timeSlots.map(slot => {
-          const slotHour = getSlotHour(slot);
-          const isToday = form.date === today;
-          const isPast = isToday && slotHour <= currentHour;
-          const isBooked = bookedSlots.includes(slot);
-
+        {slots.map((slot) => {
+          const slotTime = moment(`${slot.date} ${slot.startTime}`, "YYYY-MM-DD HH:mm");
+          const isPast = slotTime.isBefore(moment());
           return (
             <option
-              key={slot}
-              value={slot}
-              disabled={isPast || isBooked}
+              key={slot._id || `${slot.date}-${slot.startTime}`} 
+              value={`${slot.startTime}-${slot.endTime}`}
+              disabled={slot.isBooked || isPast}
             >
-              {slot} {isBooked ? '(Booked)' : isPast ? '(Unavailable)' : ''}
+              {formatSlot(slot.startTime, slot.endTime)}
+              {slot.isBooked ? " (Booked)" : isPast ? " (Unavailable)" : ""}
             </option>
           );
         })}
       </select>
 
-      <button onClick={handleSubmit}>Book Slot</button>
+      {error && <p className="error">{error}</p>}
+
+      <button onClick={handleSubmit} disabled={bookingLoading || !form.slotId}>
+        {bookingLoading ? "Booking..." : "Book Slot"}
+      </button>
     </div>
   );
 }
