@@ -2,7 +2,7 @@ import "./Booking.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import moment from "moment";
-import api from "./api/axios";
+import api from "../api/axios";
 
 function Booking() {
   const navigate = useNavigate();
