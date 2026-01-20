@@ -1,27 +1,8 @@
 import express from "express";
+import { createBooking } from "../controllers/booking.controller.js";
 import authMiddleware from "../middleware/authMiddleware.js";
-import { createBooking, getBookedSlots } from "../controllers/booking.controller.js";
-import { body } from "express-validator";
-import validateRequest from "../middleware/validateRequest.js";
-
 
 const router = express.Router();
-
-
-router.post(
-  "/",
-  authMiddleware,
-  [
-    body("sport").notEmpty(),
-    body("date").notEmpty(),
-    body("time").notEmpty()
-  ],
-  validateRequest,
-  createBooking
-);
-
-
-router.get("/booked-slots", getBookedSlots);
-
+router.post("/", authMiddleware, createBooking);
 
 export default router;

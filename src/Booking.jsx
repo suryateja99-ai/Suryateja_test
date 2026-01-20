@@ -11,34 +11,30 @@ function Booking() {
   const sport = location.state?.sport || "";
   const name = location.state?.name || "";
 
-  const [form, setForm] = useState({
-    slotId: "",
-    sport,
-    name,
-  });
-
+  const [slotId, setSlotId] = useState("");
   const [slots, setSlots] = useState([]);
+  const [date, setDate] = useState("");
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [error, setError] = useState("");
-  const [date, setDate] = useState("");
 
   const today = moment().format("YYYY-MM-DD");
 
   
   useEffect(() => {
-    if (!date || !sport) return;
+    if (!sport || !date) return;
 
     const fetchSlots = async () => {
       try {
         setLoadingSlots(true);
         setError("");
 
-        const res = await api.get("/slots", { params: { sport, date } });
-        
+        const res = await api.get("/slots", {
+          params: { sport, date }
+        });
+
         setSlots(res.data.data || []);
-        
-        setForm((prev) => ({ ...prev, slotId: "" }));
+        setSlotId(""); 
       } catch (err) {
         setError("Failed to load slots. Try again.");
         setSlots([]);
@@ -48,72 +44,62 @@ function Booking() {
     };
 
     fetchSlots();
-  }, [date, sport]);
+  }, [sport, date]);
 
-  const handleDateChange = (e) => setDate(e.target.value);
-  const handleSlotChange = (e) => setForm((prev) => ({ ...prev, slotId: e.target.value }));
-
- 
   const formatSlot = (start, end) =>
     `${moment(start, "HH:mm").format("hh:mm A")} - ${moment(end, "HH:mm").format("hh:mm A")}`;
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (!form.slotId) {
-    setError("Please select a slot");
-    return;
-  }
-
-  try {
-    setBookingLoading(true);
-    setError("");
-
-    console.log("Sending booking data:", { slotId: form.slotId });
-
-    await api.post("/bookings", {
-      sport,
-      date,
-      time: form.slotId
-    });
-    navigate("/success");
-
-  } catch (err) {
-    if (err.response?.status === 409) {
-      console.log(err)
-      setError("Slot already booked. Please select another slot.");
-      
-      const res = await api.get("/slots", { params: { sport, date } });
-      setSlots(res.data.data || []);
-    } else if (err.response?.status === 400) {
-      setError(err.response.data.message || "Invalid request");
-    } else {
-      setError("Booking failed. Try again.");
+    if (!slotId) {
+      setError("Please select a slot");
+      return;
     }
-  } finally {
-    setBookingLoading(false);
-  }
-};
 
+    try {
+      setBookingLoading(true);
+      setError("");
+
+      await api.post("/bookings", {
+        slotId
+      });
+
+      navigate("/success");
+    } catch (err) {
+      if (err.response?.status === 409) {
+        setError("Slot already booked. Please select another slot.");
+
+        
+        const res = await api.get("/slots", {
+          params: { sport, date }
+        });
+        setSlots(res.data.data || []);
+      } else {
+        setError(err.response?.data?.message || "Booking failed");
+      }
+    } finally {
+      setBookingLoading(false);
+    }
+  };
 
   return (
     <div className="form">
-      <input value={form.sport} readOnly />
-      <input value={form.name} readOnly />
+      <input value={sport} readOnly />
+      <input value={name} readOnly />
 
       <input
         type="date"
-        name="date"
         min={today}
         value={date}
-        onChange={handleDateChange}
+        onChange={(e) => setDate(e.target.value)}
         required
       />
 
       <select
-        name="slotId"
-        value={form.slotId}
-        onChange={handleSlotChange}
+        value={slotId}
+        onChange={(e) => setSlotId(e.target.value)}
         disabled={loadingSlots || !date}
         required
       >
@@ -122,12 +108,16 @@ function Booking() {
         </option>
 
         {slots.map((slot) => {
-          const slotTime = moment(`${slot.date} ${slot.startTime}`, "YYYY-MM-DD HH:mm");
+          const slotTime = moment(
+            `${slot.date} ${slot.startTime}`,
+            "YYYY-MM-DD HH:mm"
+          );
           const isPast = slotTime.isBefore(moment());
+
           return (
             <option
-              key={slot._id || `${slot.date}-${slot.startTime}`} 
-              value={`${slot.startTime}-${slot.endTime}`}
+              key={slot._id}
+              value={slot._id}              // ✅ IMPORTANT
               disabled={slot.isBooked || isPast}
             >
               {formatSlot(slot.startTime, slot.endTime)}
@@ -139,7 +129,7 @@ function Booking() {
 
       {error && <p className="error">{error}</p>}
 
-      <button onClick={handleSubmit} disabled={bookingLoading || !form.slotId}>
+      <button disabled={bookingLoading || !slotId} onClick={handleSubmit}>
         {bookingLoading ? "Booking..." : "Book Slot"}
       </button>
     </div>

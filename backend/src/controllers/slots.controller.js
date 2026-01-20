@@ -1,41 +1,35 @@
-import Slot from "../models/slot.model.js";
-import moment from "moment";
+import Slot from "../models/Slot.model.js";
+import { generateSlots } from "../utils/generateSlots.js";
 
-
-export const getSlots = async (req, res) => {
+export const getSlots = async (req, res, next) => {
   try {
     const { sport, date } = req.query;
 
     if (!sport || !date) {
-      return res.status(400).json({ success: false, message: "Sport and date required" });
+      return res.status(400).json({ success: false, message: "Missing params" });
     }
 
-    const slots = [];
-    const startHour = 8;   
-    const endHour = 20;    
-
-    for (let h = startHour; h < endHour; h++) {
-      const startTime = `${h}:00`;
-      const endTime = `${h + 1}:00`;
-
-      
-      if (moment(`${date} ${startTime}`, "YYYY-MM-DD H:mm").isBefore(moment())) continue;
-
-      
-      const existingSlot = await Slot.findOne({ sport, date, startTime });
-
-      slots.push({
-        sport,
-        date,
-        startTime,
-        endTime,
-        isBooked: existingSlot ? existingSlot.isBooked : false
+    const today = new Date().toISOString().split("T")[0];
+    if (date < today) {
+      return res.status(400).json({
+        success: false,
+        message: "Past dates not allowed"
       });
     }
 
-    res.json({ success: true, data: slots });
+    const existing = await Slot.find({ sport, date });
+    if (existing.length === 0) {
+      const generated = generateSlots().map(s => ({
+        sport,
+        date,
+        ...s
+      }));
+      await Slot.insertMany(generated);
+    }
 
+    const slots = await Slot.find({ sport, date }).sort("startTime");
+    res.json({ success: true, data: slots });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    next(err);
   }
 };

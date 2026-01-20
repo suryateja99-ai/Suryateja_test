@@ -10,7 +10,7 @@ function Login() {
 
   const [form, setForm] = useState({
     email: "",
-    password: "",
+    password: ""
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -20,7 +20,7 @@ function Login() {
   const handleChange = (e) => {
     setForm((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value
     }));
   };
 
@@ -40,14 +40,19 @@ function Login() {
       setLoading(true);
       setError("");
 
-      const res = await api.post("/auth/login", form);
+      const res = await api.post("/auth/login", {
+        email: form.email,
+        password: form.password
+      });
 
-      login(res.data.token, res.data.user.name);
+      
+      login(res.data.token, res.data.user.email);
 
       navigate("/");
     } catch (err) {
-      setError("Invalid email or password");
-      console.log(err)
+      setError(
+        err.response?.data?.message || "Invalid email or password"
+      );
     } finally {
       setLoading(false);
     }

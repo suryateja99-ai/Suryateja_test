@@ -16,7 +16,7 @@ export default function Success() {
     const timer = setTimeout(() => {
       sessionStorage.removeItem("bookingSuccess");
       navigate("/");
-    }, 5000);
+    }, 8000);
 
     return () => clearTimeout(timer);
   }, [navigate]);
