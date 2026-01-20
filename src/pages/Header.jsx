@@ -5,7 +5,6 @@ import { useAuth } from "../context/AuthContext";
 function Header() {
   const navigate = useNavigate();
   const location = useLocation();
-
   const { isLoggedIn, logout } = useAuth();
 
   const isHomepage = location.pathname === "/";

@@ -1,12 +1,10 @@
-
 .header {
-  position: relative;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: space-between;
 
   height: 64px;
-  padding: 0 20px;
+  padding: 0 24px;
 
   background: linear-gradient(
     135deg,
@@ -16,8 +14,6 @@
   );
 
   font-family: "Times New Roman", serif;
-  font-size: 22px;
-  font-weight: 600;
   color: #ffffff;
 
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -25,7 +21,22 @@
 }
 
 
-.header button {
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+
+.nav-buttons button {
   padding: 7px 16px;
   font-size: 14px;
   font-weight: 500;
@@ -37,53 +48,32 @@
   border-radius: 6px;
   cursor: pointer;
 
-  transition: 
+  transition:
     background 0.25s ease,
     transform 0.15s ease,
     box-shadow 0.15s ease;
 }
 
-/* Hover Effect */
-.header button:hover {
+
+.nav-buttons button:hover:not(:disabled) {
   background: linear-gradient(135deg, #f8f9fa, #e8f0fe);
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* Disabled State */
-.header button:disabled {
-  background: #d0d0d0;
-  color: #888;
+
+.nav-buttons button:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
-  opacity: 0.7;
-  visibility: hidden;
+  display: none;
 }
 
-/* ===== Button Positions ===== */
-.home {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+
+.nav-buttons .logout {
+  background: linear-gradient(135deg, #ff4d4f, #ff7875);
+  color: #ffffff;
 }
 
-.register {
-  position: absolute;
-  right: 110px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.login {
-  position: absolute;
-  right: 200px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.logout {
-  position: absolute;
-  right: 100px;
-  top: 50%;
-  transform: translateY(-50%);
+.nav-buttons .logout:hover {
+  background: linear-gradient(135deg, #ff7875, #ff4d4f);
 }
