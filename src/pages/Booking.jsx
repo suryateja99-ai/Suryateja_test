@@ -117,7 +117,7 @@ function Booking() {
           return (
             <option
               key={slot._id}
-              value={slot._id}              // ✅ IMPORTANT
+              value={slot._id}             
               disabled={slot.isBooked || isPast}
             >
               {formatSlot(slot.startTime, slot.endTime)}
